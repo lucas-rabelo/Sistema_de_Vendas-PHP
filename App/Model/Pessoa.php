@@ -8,7 +8,10 @@ class Pessoa extends Record
     const TABLENAME = 'pessoa';
     private $cidade;
     
-
+    /**
+     * Retorna a cidade.
+     * Executado sempre se for acessada a propriedade "->cidade"
+     */
     public function get_cidade()
     {
         if (empty($this->cidade))
@@ -17,6 +20,10 @@ class Pessoa extends Record
         return $this->cidade;
     }
     
+    /**
+     * Retorna o nome da cidade.
+     * Executado sempre se for acessada a propriedade "->nome_cidade"
+     */
     public function get_nome_cidade()
     {
         if (empty($this->cidade))
@@ -24,7 +31,10 @@ class Pessoa extends Record
         
         return $this->cidade->nome;
     }
-
+    
+    /**
+     * Adiciona um grupo à pessoa
+     */
     public function addGrupo(Grupo $grupo)
     {
         $pg = new PessoaGrupo;
@@ -33,6 +43,9 @@ class Pessoa extends Record
         $pg->store();
     }
     
+    /**
+     * Exclui os grupos da pessoa
+     */
     public function delGrupos()
     {
 	    $criteria = new Criteria;
@@ -41,7 +54,10 @@ class Pessoa extends Record
 	    $repo = new Repository('PessoaGrupo');
 	    return $repo->delete($criteria);
     }
-
+    
+    /**
+     * Retorna os grupos da pessoa
+     */
     public function getGrupos()
     {
         $grupos = array();
@@ -57,7 +73,10 @@ class Pessoa extends Record
 	    }
 	    return $grupos;
     }
-
+    
+    /**
+     * Retorna os ID's de grupos da pessoa
+     */
     public function getIdsGrupos()
     {
         $grupos_ids = array();
@@ -80,12 +99,18 @@ class Pessoa extends Record
         
         parent::delete();
     }
-
+    
+    /**
+     * Retorna as contas em aberto
+     */
     public function getContasEmAberto()
     {
         return Conta::getByPessoa($this->id);
     }
-
+    
+    /**
+     * Retorna o total em débitos
+     */
     public function totalDebitos()
     {
         return Conta::debitosPorPessoa($this->id);

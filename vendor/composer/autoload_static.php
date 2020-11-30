@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitaa43291926c2391fdf6421835b1bc047
+class ComposerStaticInit9e5d04026de08c8acaccb0722f4d6213
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -19,6 +19,18 @@ class ComposerStaticInitaa43291926c2391fdf6421835b1bc047
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
         ),
+        'P' => 
+        array (
+            'Picqer\\Barcode\\' => 15,
+        ),
+        'F' => 
+        array (
+            'FontLib\\' => 8,
+        ),
+        'D' => 
+        array (
+            'Dompdf\\' => 7,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -30,6 +42,18 @@ class ComposerStaticInitaa43291926c2391fdf6421835b1bc047
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
+        'Picqer\\Barcode\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/picqer/php-barcode-generator/src',
+        ),
+        'FontLib\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib',
+        ),
+        'Dompdf\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dompdf/dompdf/src',
+        ),
     );
 
     public static $prefixesPsr0 = array (
@@ -40,14 +64,42 @@ class ComposerStaticInitaa43291926c2391fdf6421835b1bc047
                 0 => __DIR__ . '/..' . '/twig/twig/lib',
             ),
         ),
+        'S' => 
+        array (
+            'Svg\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/phenx/php-svg-lib/src',
+            ),
+            'Sabberworm\\CSS' => 
+            array (
+                0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/lib',
+            ),
+        ),
+        'B' => 
+        array (
+            'BaconQrCode' => 
+            array (
+                0 => __DIR__ . '/..' . '/bacon/bacon-qr-code/src',
+            ),
+        ),
+    );
+
+    public static $classMap = array (
+        'Cpdf' => __DIR__ . '/..' . '/dompdf/dompdf/lib/Cpdf.php',
+        'HTML5_Data' => __DIR__ . '/..' . '/dompdf/dompdf/lib/html5lib/Data.php',
+        'HTML5_InputStream' => __DIR__ . '/..' . '/dompdf/dompdf/lib/html5lib/InputStream.php',
+        'HTML5_Parser' => __DIR__ . '/..' . '/dompdf/dompdf/lib/html5lib/Parser.php',
+        'HTML5_Tokenizer' => __DIR__ . '/..' . '/dompdf/dompdf/lib/html5lib/Tokenizer.php',
+        'HTML5_TreeBuilder' => __DIR__ . '/..' . '/dompdf/dompdf/lib/html5lib/TreeBuilder.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitaa43291926c2391fdf6421835b1bc047::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitaa43291926c2391fdf6421835b1bc047::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitaa43291926c2391fdf6421835b1bc047::$prefixesPsr0;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit9e5d04026de08c8acaccb0722f4d6213::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit9e5d04026de08c8acaccb0722f4d6213::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit9e5d04026de08c8acaccb0722f4d6213::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit9e5d04026de08c8acaccb0722f4d6213::$classMap;
 
         }, null, ClassLoader::class);
     }
