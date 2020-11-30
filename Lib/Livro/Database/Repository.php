@@ -3,93 +3,149 @@ namespace Livro\Database;
 
 use Exception;
 
-class Repository {
-
-    private $activeRecord;
-
-    public function __construct($class) {
+/**
+ * Manipular coleções de objetos.
+ * @author Pablo Dall'Oglio
+ */
+final class Repository
+{
+    private $activeRecord; // classe manipulada pelo repositório
+    
+    /**
+     * Instancia um Repositório de objetos
+     * @param $class = Classe dos Objetos
+     */
+    function __construct($class)
+    {
         $this->activeRecord = $class;
     }
-    public function load(Criteria $criteria) {
-        $sql = "SELECT * FROM " . constant( $this->activeRecord . '::TABLENAME' );
-
-        if($criteria) {
+    
+    /**
+     * Carrega um conjunto de objetos (collection) da base de dados
+     * @param $criteria = objeto do tipo TCriteria
+     */
+    function load(Criteria $criteria)
+    {
+        // instancia a instrução de SELECT
+        $sql = "SELECT * FROM " . constant($this->activeRecord.'::TABLENAME');
+        
+        // obtém a cláusula WHERE do objeto criteria.
+        if ($criteria)
+        {
             $expression = $criteria->dump();
-            if ( $expression ) {
-                $sql .= " WHERE " . $expression;
+            if ($expression)
+            {
+                $sql .= ' WHERE ' . $expression;
             }
-
-            $order  = $criteria->getProperty('order');
-            $limit  = $criteria->getProperty('limit');
-            $offset = $criteria->getProperty('offset');
-
+            
+            // obtém as propriedades do critério
+            $order = $criteria->getProperty('order');
+            $limit = $criteria->getProperty('limit');
+            $offset= $criteria->getProperty('offset');
+            
+            // obtém a ordenação do SELECT
             if ($order) {
-                $sql .= " ORDER BY " . $order;
+                $sql .= ' ORDER BY ' . $order;
             }
             if ($limit) {
-                $sql .= " LIMIT " . $limit;
+                $sql .= ' LIMIT ' . $limit;
             }
             if ($offset) {
-                $sql .= " OFFSET " . $offset;
+                $sql .= ' OFFSET ' . $offset;
             }
         }
-
-        if ($conn = Transaction::get()) {
+        
+        // obtém transação ativa
+        if ($conn = Transaction::get())
+        {
+            // registra mensagem de log
             Transaction::log($sql);
-            $result = $conn->query($sql);
-
-            if ($result) {
-                $results = [];
-                while ($row = $result->fetchObject( $this->activeRecord )) {
+            
+            // executa a consulta no banco de dados
+            $result= $conn->query($sql);
+            $results = array();
+            
+            if ($result)
+            {
+                // percorre os resultados da consulta, retornando um objeto
+                while ($row = $result->fetchObject($this->activeRecord))
+                {
+                    // armazena no array $results;
                     $results[] = $row;
                 }
-                return $results;
             }
+            return $results;
         }
-        else {
-            throw new Exception('Não há transação ativa!');
+        else
+        {
+            // se não tiver transação, retorna uma exceção
+            throw new Exception('Não há transação ativa!!');
         }
+    }
     
-    }
-
-    public function delete(riteria $criteria) {
-        $sql = "DELETE FROM" . constant( $this->activeRecord . '::TABLENAME' );
-
-        if($criteria) {
-            $expression = $criteria->dump();
-            if ( $expression ) {
-                $sql .= " WHERE " . $expression;
-            }
+    /**
+     * Excluir um conjunto de objetos (collection) da base de dados
+     * @param $criteria = objeto do tipo Criteria
+     */
+    function delete(Criteria $criteria)
+    {
+        $expression = $criteria->dump();
+        $sql = "DELETE FROM " . constant($this->activeRecord.'::TABLENAME');
+        if ($expression)
+        {
+            $sql .= ' WHERE ' . $expression;
         }
-        if ( $conn = Transaction::get() ) {
+        
+        // obtém transação ativa
+        if ($conn = Transaction::get())
+        {
+            // registra mensagem de log
             Transaction::log($sql);
-            return $conn->exec($sql);
+            // executa instrução de DELETE
+            $result = $conn->exec($sql);
+            return $result;
         }
-        else {
-            throw new Exception('Não há Transação ativa!');
+        else
+        {
+            // se não tiver transação, retorna uma exceção
+            throw new Exception('Não há transação ativa!!');
+            
         }
     }
-
-    public function count(Criteria $criteria) {
-        $sql = "SELECT count(*) FROM" . constant( $this->activeRecord . '::TABLENAME' );
-
-        if($criteria) {
-            $expression = $criteria->dump();
-            if ( $expression ) {
-                $sql .= " WHERE " . $expression;
-            }
+    
+    /**
+     * Retorna a quantidade de objetos da base de dados
+     * que satisfazem um determinado critério de seleção.
+     * @param $criteria = objeto do tipo TCriteria
+     */
+    function count(Criteria $criteria)
+    {
+        $expression = $criteria->dump();
+        $sql = "SELECT count(*) FROM " . constant($this->activeRecord.'::TABLENAME');
+        if ($expression)
+        {
+            $sql .= ' WHERE ' . $expression;
         }
-        if ( $conn = Transaction::get() ) {
+        
+        // obtém transação ativa
+        if ($conn = Transaction::get())
+        {
+            // registra mensagem de log
             Transaction::log($sql);
-            $result = $conn->query($sql);
-            if($result) {
+            
+            // executa instrução de SELECT
+            $result= $conn->query($sql);
+            if ($result)
+            {
                 $row = $result->fetch();
-
-                return $row[0];
             }
+            // retorna o resultado
+            return $row[0];
         }
-        else {
-            throw new Exception('Não há Transação ativa!');
+        else
+        {
+            // se não tiver transação, retorna uma exceção
+            throw new Exception('Não há transação ativa!!');
         }
     }
 }

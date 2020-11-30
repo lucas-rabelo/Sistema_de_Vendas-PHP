@@ -1,68 +1,138 @@
 <?php
 namespace Livro\Database;
 
-class Criteria {
-
-    private $filters;
-    private $properties;
-
-    public function __construct() {
-        $this->filters = [];
-        $this->properties = [];
+/**
+ * Permite definição de critérios
+ * @author Pablo Dall'Oglio
+ */
+class Criteria
+{
+    private $filters; // armazena a lista de filtros
+    
+    /**
+     * Método Construtor
+     */
+    function __construct()
+    {
+        $this->filters = array();
     }
-
-    public function add( $variable, $compare, $value, $logic_op = 'AND' ) {
-       if (empty($this->filters)) {
-           $logic_op = null;
-       }
-        $this->filters[] = [$variable, $compare, $this->transform($value), $logic_op];
+    
+    /**
+     * Adiciona uma expressão ao critério
+     * @param $variable           Variável/campo
+     * @param $compare_operator   Operador de comparação
+     * @param $value              Valor a ser comparado
+     * @param $logic_operator     Operador lógico
+     */
+    public function add($variable, $compare_operator, $value, $logic_operator = 'and')
+    {
+        // na primeira vez, não precisamos concatenar
+        if (empty($this->filters))
+        {
+            $logic_operator = NULL;
+        }
+        
+        $this->filters[] = [$variable, $compare_operator, $this->transform($value), $logic_operator];
     }
-
-    public function transform($value) {
-        if (is_array($value)) {
-            foreach($value as $x) {
-                if ( is_integer($x) ) {
-                    $foo[] = $x;
+    
+    /**
+     * Recebe um valor e faz as modificações necessárias
+     *   para ele ser interpretado pelo banco de dados
+     * @param $value = valor a ser transformado
+     */
+    private function transform($value)
+    {
+        // caso seja um array
+        if (is_array($value))
+        {
+            // percorre os valores
+            foreach ($value as $x)
+            {
+                // se for um inteiro
+                if (is_integer($x))
+                {
+                    $foo[]= $x;
                 }
-                else if ( is_string($x) ) {
-                    $foo[] = "'$x'";
+                else if (is_string($x))
+                {
+                    // se for string, adiciona aspas
+                    $foo[]= "'$x'";
                 }
             }
+            // converte o array em string separada por ","
             $result = '(' . implode(',', $foo) . ')';
         }
-        else if ( is_string($value) ) {
-            $result = "'$value'"; 
+        // caso seja uma string
+        else if (is_string($value))
+        {
+            // adiciona aspas
+            $result = "'$value'";
         }
-        else if ( is_null($value) ) {
+        // caso seja valor nullo
+        else if (is_null($value))
+        {
+            // armazena NULL
             $result = 'NULL';
         }
-        else if ( is_bool($value) ) {
+        
+        // caso seja booleano
+        else if (is_bool($value))
+        {
+            // armazena TRUE ou FALSE
             $result = $value ? 'TRUE' : 'FALSE';
         }
-        else {
-            // retorna o valor
+        else
+        {
             $result = $value;
         }
+        // retorna o valor
+        return $result;
     }
-
-    public function dump() {
-        if ( is_array($this->filters) and count($this->filters) > 0 ) {
+    
+    /**
+     * Retorna a expressão final
+     */
+    public function dump()
+    {
+        // concatena a lista de expressões
+        if (is_array($this->filters) and count($this->filters) > 0)
+        {
             $result = '';
-            foreach( $this->filters as $filter ) {
-                $result .= $filter[3] . ' ' . $filter[0] . ' ' . $filter[1] . ' ' . $filter[2] . ' ';
+            foreach ($this->filters as $filter)
+            {
+                $result .= $filter[3] . ' ' . $filter[0] . ' ' . $filter[1] . ' '. $filter[2] . ' ';
             }
             $result = trim($result);
             return "({$result})";
         }
     }
-
-    public function setProperty( $property, $value ) {
-        $this->properties[$property] = $value;
+    
+    /**
+     * Define o valor de uma propriedade
+     * @param $property = propriedade
+     * @param $value    = valor
+     */
+    public function setProperty($property, $value)
+    {
+        if (isset($value))
+        {
+            $this->properties[$property] = $value;
+        }
+        else
+        {
+            $this->properties[$property] = NULL;
+        }
     }
-
-    public function getProperty( $property ) {
-        if ( isset($this->properties[$property]) ) {
+    
+    /**
+     * Retorna o valor de uma propriedade
+     * @param $property = propriedade
+     */
+    public function getProperty($property)
+    {
+        if (isset($this->properties[$property]))
+        {
             return $this->properties[$property];
         }
-    }   
+    }
 }
