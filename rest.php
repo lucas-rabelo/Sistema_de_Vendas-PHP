@@ -1,45 +1,54 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
+// Lib loader
 require_once 'Lib/Livro/Core/ClassLoader.php';
-$al = new Livro\Core\ClassLoader;
+$al= new Livro\Core\ClassLoader;
 $al->addNamespace('Livro', 'Lib/Livro');
 $al->register();
 
+// App loader
 require_once 'Lib/Livro/Core/AppLoader.php';
-$al = new Livro\Core\AppLoader;
+$al= new Livro\Core\AppLoader;
 $al->addDirectory('App/Control');
 $al->addDirectory('App/Model');
 $al->addDirectory('App/Services');
 $al->register();
 
-class LivroRestServer {
-    public static function run( $request ) {
-        $class  = isset( $request['class']) ? $request['class'] : '';
-        $method = isset( $request['method']) ? $request['method'] : '';
-
-        try {
-
-            if (class_exists( $class )) {
-                if (method_exists( $class, $method )) {
-                    $response = call_user_func( [$class, $method], $request );
-                    return json_encode( ['status' => 'success',
-                                         'data'   => $response] );
+class LivroRestServer
+{
+    public static function run($request)
+    {
+        $class    = isset($request['class'])  ? $request['class']  : '';
+        $method   = isset($request['method']) ? $request['method'] : '';
+        $response = NULL;
+        
+        try
+        {
+            if (class_exists($class))
+            {
+                if (method_exists($class, $method))
+                {
+                    $response = call_user_func(array($class, $method), $request);
+                    return json_encode( array('status' => 'success', 'data' => $response));
                 }
-                else {
-                    return json_encode( ['status' => 'error',
-                                         'data'   => "Método {$method} não encontrado"]);
+                else
+                {
+                    $error_message = "Método {$class}::{$method} não encontrado";
+                    return json_encode( array('status' => 'error', 'data' => $error_message));
                 }
             }
-            else {
-                return json_encode( ['status' => 'error',
-                                     'data'   => "Classe {$class} não encontrada"]);
+            else
+            {
+                $error_message = "Classe {$class} não encontrada";
+                return json_encode( array('status' => 'error', 'data' => $error_message));
             }
         }
-        catch ( Exception $e ) {
-            return json_encode( ['status' => 'error',
-                                 'data'   => $e->getMessage() ]);
+        catch (Exception $e)
+        {
+            return json_encode( array('status' => 'error', 'data' => $e->getMessage()));
         }
     }
 }
+
 print LivroRestServer::run($_REQUEST);
