@@ -4,10 +4,10 @@ namespace Livro\Widgets\Container;
 use Livro\Widgets\Base\Element;
 
 /**
- * Caixa horizontal
+ * Caixa vertical
  * @author Pablo Dall'Oglio
  */
-class HBox extends Element
+class VBox extends Element
 {
     /**
      * Método construtor
@@ -15,6 +15,7 @@ class HBox extends Element
     public function __construct()
     {
         parent::__construct('div');
+        $this->{'style'} = 'display: inline-block';
     }
     
     /**
@@ -24,7 +25,7 @@ class HBox extends Element
     public function add($child)
     {
         $wrapper = new Element('div');
-        $wrapper->{'style'} = 'display:inline-block;';
+        $wrapper->{'style'} = 'clear:both';
         $wrapper->add($child);
         parent::add($wrapper);
         return $wrapper;

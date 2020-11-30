@@ -9,7 +9,7 @@ class ExemploActionButtonControl extends Page
     {
         parent::__construct();
 
-        $button = new Element('a');
+        $button = new Elements('a');
         $button->add('Ação');
         $buttun->class = 'btn btn-success';
 
