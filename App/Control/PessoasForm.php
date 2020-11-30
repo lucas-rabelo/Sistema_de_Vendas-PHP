@@ -73,29 +73,69 @@ class PessoasForm extends Page
         parent::add($this->form);
     }
 
+    /**
+     * Salva os dados do formulário
+     */
     public function onSave()
     {
+        try
+        {
+            // inicia transação com o BD
+            Transaction::open('livro');
 
+            $dados = $this->form->getData();
+            $this->form->setData($dados);
+            $pessoa = new Pessoa; // instancia objeto
+            $pessoa->fromArray( (array) $dados); // carrega os dados
+            $pessoa->store(); // armazena o objeto no banco de dados
+            
+            $pessoa->delGrupos();
+            if ($dados->ids_grupos) {
+                foreach ($dados->ids_grupos as $id_grupo)
+                {
+                    $pessoa->addGrupo( new Grupo($id_grupo) );
+                }
+            }
+            
+            Transaction::close(); // finaliza a transação
+            new Message('info', 'Dados armazenados com sucesso');
+        }
+        catch (Exception $e)
+        {
+            // exibe a mensagem gerada pela exceção
+            new Message('error', $e->getMessage());
+
+            // desfaz todas alterações no banco de dados
+            Transaction::rollback();
+        }
     }
-
+    
+    /**
+     * Carrega registro para edição
+     */
     public function onEdit($param)
     {
         try
         {
-            if(!empty($param['id']))
+            if (isset($param['id']))
             {
-                Transaction::open('livro');
-
-                $pessoa = Pessoa::find( $param['id'] );
-                $this->form->setData($pessoa);
-
-                Transction::close();
+                $id = $param['id']; // obtém a chave
+                Transaction::open('livro'); // inicia transação com o BD
+                $pessoa = Pessoa::find($id);
+                if ($pessoa)
+                {
+                    $pessoa->ids_grupos = $pessoa->getIdsGrupos();
+                    $this->form->setData($pessoa); // lança os dados da pessoa no formulário
+                }
+                Transaction::close(); // finaliza a transação
             }
         }
-        catch (Exception $e)
+        catch (Exception $e)		    // em caso de exceção
         {
+            // exibe a mensagem gerada pela exceção
             new Message('error', $e->getMessage());
-            Transaction::rolback();
+            // desfaz todas alterações no banco de dados
+            Transaction::rollback();
         }
     }
 }
